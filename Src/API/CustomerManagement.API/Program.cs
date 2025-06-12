@@ -1,4 +1,4 @@
-using CustomerManagement.Application;
+using CustomerManagement.Application.Extensions;
 using CustomerManagement.Infrastructure;
 
 var builder = WebApplication.CreateBuilder(args);
