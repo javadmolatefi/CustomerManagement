@@ -1,11 +1,13 @@
 ﻿using CustomerManagement.Application.Customers;
 using CustomerManagement.Application.Customers.Dtos;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CustomerManagement.API.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
+[Authorize]
 public class CustomerController : ControllerBase
 {
     private readonly ICustomerFacade _facade;

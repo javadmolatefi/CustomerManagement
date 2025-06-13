@@ -1,11 +1,13 @@
 ﻿using CustomerManagement.Application.Cities;
 using CustomerManagement.Application.Cities.Dtos;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CustomerManagement.API.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
+[Authorize]
 public class CityController : ControllerBase
 {
     private readonly ICityFacade _facade;
