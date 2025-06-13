@@ -1,0 +1,51 @@
+﻿using CustomerManagement.Application.Cities;
+using CustomerManagement.Application.Cities.Dtos;
+using Microsoft.AspNetCore.Mvc;
+
+namespace CustomerManagement.API.Controllers;
+
+[ApiController]
+[Route("api/[controller]")]
+public class CityController : ControllerBase
+{
+    private readonly ICityFacade _facade;
+
+    public CityController(ICityFacade facade)
+        => _facade = facade;
+
+    [HttpGet]
+    public async Task<ActionResult<List<CityDto>>> GetAll()
+    {
+        return Ok(await _facade.GetAllAsync());
+    }
+
+    [HttpGet("{id:int}")]
+    public async Task<ActionResult<CityDto?>> Get(int id)
+    {
+        var city = await _facade.GetByIdAsync(id);
+        if (city == null) return NotFound();
+        return Ok(city);
+    }
+
+    [HttpPost]
+    public async Task<ActionResult<int>> Create([FromBody] CityDto dto)
+    {
+        var id = await _facade.CreateAsync(dto);
+        return CreatedAtAction(nameof(Get), new { id }, id);
+    }
+
+    [HttpPut("{id:int}")]
+    public async Task<IActionResult> Update(int id, [FromBody] CityDto dto)
+    {
+        if (id != dto.Id) return BadRequest();
+        await _facade.UpdateAsync(dto);
+        return NoContent();
+    }
+
+    [HttpDelete("{id:int}")]
+    public async Task<IActionResult> Delete(int id)
+    {
+        await _facade.DeleteAsync(id);
+        return NoContent();
+    }
+}
