@@ -1,6 +1,8 @@
 ﻿using CustomerManagement.Application.Common.Identity;
+using CustomerManagement.Application.Common.Interfaces;
 using CustomerManagement.Domain.Interfaces;
 using CustomerManagement.Infrastructure.Identity;
+using CustomerManagement.Infrastructure.Logging;
 using CustomerManagement.Infrastructure.Persistence;
 using CustomerManagement.Infrastructure.Persistence.Repositories;
 using Microsoft.AspNetCore.Identity;
@@ -25,6 +27,8 @@ public static class InfrastructureDependencyInjection
         services.AddScoped<ICustomerRepository, CustomerRepository>();
         services.AddScoped<ICityRepository, CityRepository>();
         services.AddScoped<IIdentityService, IdentityService>();
+        services.AddScoped<ILogRepository, LogRepository>();
+        services.AddScoped<ILogService, LogService>();
 
         return services;
     }

@@ -1,7 +1,5 @@
 ﻿using CustomerManagement.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
-using System.Collections.Generic;
-using System.Reflection.Emit;
 
 namespace CustomerManagement.Infrastructure.Persistence;
 
@@ -11,6 +9,7 @@ public class ApplicationDbContext : DbContext
 
     public DbSet<Customer> Customers => Set<Customer>();
     public DbSet<City> Cities => Set<City>();
+    public DbSet<LogEntry> Logs { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

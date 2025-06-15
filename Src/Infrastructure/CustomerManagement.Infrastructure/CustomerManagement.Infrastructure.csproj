@@ -19,6 +19,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\Domain\CustomerManagement.Domain\CustomerManagement.Domain.csproj" />
+    <ProjectReference Include="..\..\Application\CustomerManagement.Application\CustomerManagement.Application.csproj" />
   </ItemGroup>
 
   <PropertyGroup>
