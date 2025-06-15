@@ -33,7 +33,6 @@ public class CityRepository : ICityRepository
     public async Task DeleteAsync(City city)
     {
         city.IsDeleted = true;
-        city.DeletedAt = DateTime.Now;
         _context.Cities.Update(city);
         await _context.SaveChangesAsync();
     }

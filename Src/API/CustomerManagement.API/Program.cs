@@ -1,3 +1,5 @@
+using CustomerManagement.API.Services;
+using CustomerManagement.Application.Common.Interfaces;
 using CustomerManagement.Application.Extensions;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
@@ -8,6 +10,9 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddApplication();
 builder.Services.AddInfrastructure(builder.Configuration);
+
+builder.Services.AddHttpContextAccessor();
+builder.Services.AddScoped<ICurrentUserService, CurrentUserService>();
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();

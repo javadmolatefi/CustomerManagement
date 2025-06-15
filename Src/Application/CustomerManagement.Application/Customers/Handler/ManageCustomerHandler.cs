@@ -1,4 +1,5 @@
-﻿using CustomerManagement.Application.Customers.Commands;
+﻿using CustomerManagement.Application.Common.Interfaces;
+using CustomerManagement.Application.Customers.Commands;
 using CustomerManagement.Domain.Entities;
 using CustomerManagement.Domain.Interfaces;
 using MediatR;
@@ -11,10 +12,12 @@ public class ManageCustomerHandler :
     IRequestHandler<DeleteCustomerCommand>
 {
     private readonly ICustomerRepository _repo;
+    private readonly ICurrentUserService _currentUser;
 
-    public ManageCustomerHandler(ICustomerRepository repo)
+    public ManageCustomerHandler(ICustomerRepository repo, ICurrentUserService currentUser)
     {
         _repo = repo;
+        _currentUser = currentUser;
     }
 
     public async Task<int> Handle(CreateCustomerCommand request, CancellationToken cancellationToken)
@@ -26,7 +29,8 @@ public class ManageCustomerHandler :
             CityId = request.Customer.CityId,
             Phone = request.Customer.Phone,
             Fax = request.Customer.Fax,
-            Coworkers = request.Customer.Coworkers
+            Coworkers = request.Customer.Coworkers,
+            CreatedBy = _currentUser.UserId
         };
 
         await _repo.AddAsync(entity);
@@ -44,6 +48,8 @@ public class ManageCustomerHandler :
         customer.Phone = request.Customer.Phone;
         customer.Fax = request.Customer.Fax;
         customer.Coworkers = request.Customer.Coworkers;
+        customer.UpdatedAt = DateTime.Now;
+        customer.EditedBy = _currentUser.UserId;
 
         await _repo.UpdateAsync(customer);
     }
@@ -53,6 +59,9 @@ public class ManageCustomerHandler :
         var customer = await _repo.GetByIdAsync(request.Id);
         if (customer != null)
         {
+            customer.DeletedBy = _currentUser.UserId;
+            customer.DeletedAt = DateTime.Now;
+
             await _repo.DeleteAsync(customer);
         }
     }

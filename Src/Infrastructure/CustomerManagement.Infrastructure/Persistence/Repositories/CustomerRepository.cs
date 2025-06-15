@@ -43,7 +43,6 @@ public class CustomerRepository : ICustomerRepository
     public async Task DeleteAsync(Customer customer)
     {
         customer.IsDeleted = true;
-        customer.DeletedAt = DateTime.Now;
         _context.Customers.Update(customer);
         await _context.SaveChangesAsync();
     }
