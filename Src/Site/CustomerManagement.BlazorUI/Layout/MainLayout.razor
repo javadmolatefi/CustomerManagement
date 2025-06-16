@@ -1,16 +1,58 @@
-﻿@inherits LayoutComponentBase
-<div class="page">
-    <div class="sidebar">
-        <NavMenu />
-    </div>
+﻿@using Microsoft.AspNetCore.Components.Authorization
+@inherits LayoutComponentBase
+@inject AuthenticationStateProvider AuthProvider
+@inject NavigationManager Navigation
+@inject Blazored.LocalStorage.ILocalStorageService LocalStorage
 
-    <main>
-        <div class="top-row px-4">
-            <a href="https://learn.microsoft.com/aspnet/core/" target="_blank">About</a>
+<CascadingAuthenticationState>
+    <div class="page">
+        <div class="sidebar">
+            <NavMenu />
         </div>
 
-        <article class="content px-4">
-            @Body
-        </article>
-    </main>
-</div>
+        <main style="background-color: #ecf0f5;">
+            <div class="top-row px-4 d-flex justify-content-between align-items-center border-bottom">
+
+                <a href="" target="_blank"></a>
+
+                @if (isAuthenticated)
+                {
+                    <div class="d-flex align-items-center">
+                        <span class="me-3">
+                            Welcome, <b>@userName</b>
+                        </span>
+                        <button class="btn btn-sm btn-outline-danger" @onclick="Logout">Logout</button>
+                    </div>
+                }
+            </div>
+
+            <article class="content px-4">
+                @Body
+            </article>
+        </main>
+    </div>
+</CascadingAuthenticationState>
+
+@code {
+    private string? userName;
+    private bool isAuthenticated;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var authState = await AuthProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
+
+        isAuthenticated = user.Identity?.IsAuthenticated ?? false;
+        userName = user.Identity?.Name;
+    }
+
+    private async Task Logout()
+    {
+        await LocalStorage.RemoveItemAsync("token");
+
+        if (AuthProvider is JwtAuthenticationStateProvider jwt)
+            jwt.NotifyUserLogout();
+
+        Navigation.NavigateTo("/login", true);
+    }
+}

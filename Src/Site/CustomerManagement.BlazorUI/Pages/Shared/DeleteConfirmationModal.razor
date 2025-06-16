@@ -1,0 +1,43 @@
+﻿@if (IsVisible)
+{
+    <div class="modal-backdrop fade show"></div>
+    <div class="modal show d-block" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+
+                <div class="modal-header">
+                    <h5 class="modal-title">Delete Confirmation</h5>
+                    <button type="button" class="btn-close" @onclick="Cancel"></button>
+                </div>
+
+                <div class="modal-body">
+                    <p>@Message</p>
+                </div>
+
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" @onclick="Cancel">Cancel</button>
+                    <button class="btn btn-danger" @onclick="Confirm">Delete</button>
+                </div>
+
+            </div>
+        </div>
+    </div>
+}
+
+@code {
+    [Parameter] public EventCallback OnConfirm { get; set; }
+    [Parameter] public string Message { get; set; } = "Are you sure?";
+
+    public bool IsVisible { get; private set; }
+
+    public void Show() => IsVisible = true;
+    public void Hide() => IsVisible = false;
+
+    private async Task Confirm()
+    {
+        await OnConfirm.InvokeAsync();
+        Hide();
+    }
+
+    private void Cancel() => Hide();
+}

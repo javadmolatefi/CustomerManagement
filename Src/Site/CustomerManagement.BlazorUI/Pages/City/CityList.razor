@@ -1,0 +1,128 @@
+﻿@using Microsoft.AspNetCore.Authorization
+@attribute [Authorize]
+@page "/city"
+@using CustomerManagement.BlazorUI.Pages.Shared
+@inject CityService CityService
+
+<div style="background-color: #fff; border-radius: 15px; padding: 20px;">
+    <div class="row" style="margin-bottom: 15px;">
+        <div class="col-6">
+            <h3 style="margin-top: 15px !important; font-weight: bold;">
+                Cities
+            </h3>
+        </div>
+        <div class="col-6 text-end">
+            <label @onclick="OpenNewModal" style="margin-top: 15px !important;" data-bs-toggle="tooltip" data-bs-placement="top" title="Add a City">
+                <a id="create-task-state-link" style="font-size: small;margin-top: 5px !important; cursor: pointer;">
+                    <i class="fa-solid fa-circle-plus fa-2xl" style="margin-left: 5px; color: #008bd2;"></i>
+                </a>
+            </label>
+        </div>
+    </div>
+
+    @if (Cities == null)
+    {
+        <p>Loading...</p>
+    }
+    else
+    {
+        <div class="row justify-content-md-center">
+            <div class="col">
+                <table class="table table-striped">
+                    <thead>
+                        <tr class="text-center">
+                            <th scope="col">#</th>
+                            <th scope="col">City</th>
+                            <th scope="col">Operation</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @{var counter = 1;}
+                        @foreach (var city in Cities)
+                        {
+                            <tr class="text-center">
+                                <td style="padding-top:15px !important; padding-bottom: 15px;">
+                                    @counter
+                                </td>
+                                <td style="padding-top:15px !important; padding-bottom: 15px;">
+                                    @city.Title
+                                </td>
+                                <td style="padding-top:15px !important; padding-bottom: 15px;">
+                                    <label data-bs-toggle="tooltip" data-bs-placement="top" title="Edit City">
+                                        <a @onclick="@(() => OpenEditModal(city))" style="font-size: small; cursor: pointer;">
+                                            <i class="fa-solid fa-pen fa-lg" style="color: #fec107;"></i>
+                                        </a>
+                                    </label>
+                                    <label data-bs-toggle="tooltip" data-bs-placement="top" title="Delete City">
+                                        <a @onclick="() => AskDelete(city)" style="font-size: small; cursor: pointer;">
+                                            <i class="fa-solid fa-trash fa-lg" style="margin-left: 10px; color: #dc3546;"></i>
+                                        </a>
+                                    </label>
+                                </td>
+                            </tr>
+                            counter++;
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    }
+
+</div>
+
+<CreateOrEditModal @ref="cityModal" Title="@modalTitle" OnClose="RefreshCities">
+    <CityForm City="@selectedCity" OnSaved="RefreshCities" />
+</CreateOrEditModal>
+
+<DeleteConfirmationModal @ref="deleteModal" OnConfirm="ConfirmDelete" Message="@deleteMessage" />
+
+@code {
+    private List<CityDto>? Cities;
+    private CreateOrEditModal? cityModal;
+    private CityDto selectedCity = new();
+    private string modalTitle = "City";
+    private DeleteConfirmationModal? deleteModal;
+    private int deleteId;
+    private string deleteMessage = "";
+
+    protected override async Task OnInitializedAsync() =>
+        await RefreshCities();
+
+    private async Task RefreshCities()
+    {
+        Cities = await CityService.GetAllAsync();
+        StateHasChanged();
+    }
+
+    private void OpenNewModal()
+    {
+        selectedCity = new CityDto();
+        modalTitle = "New City";
+        cityModal?.Show();
+    }
+
+    private void OpenEditModal(CityDto city)
+    {
+        selectedCity = new CityDto
+        {
+            Id = city.Id,
+            Title = city.Title
+        };
+        modalTitle = "Edit City";
+        cityModal?.Show();
+    }
+
+
+    private void AskDelete(CityDto city)
+    {
+        deleteId = city.Id;
+        deleteMessage = $"Are you sure of deleting {city.Title}?";
+        deleteModal?.Show();
+    }
+
+    private async Task ConfirmDelete()
+    {
+        await CityService.DeleteAsync(deleteId);
+        await RefreshCities();
+    }
+}

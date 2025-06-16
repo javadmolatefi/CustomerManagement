@@ -27,7 +27,8 @@ public class GetCustomerHandler :
             CityId = c.CityId,
             Phone = c.Phone,
             Fax = c.Fax,
-            Coworkers = c.Coworkers
+            Coworkers = c.Coworkers,
+            CityTitle = c.City?.Title
         }).ToList();
     }
 

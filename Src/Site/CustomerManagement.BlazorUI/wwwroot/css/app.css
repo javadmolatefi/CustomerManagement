@@ -101,3 +101,45 @@ a, .btn-link {
 code {
     color: #c02d76;
 }
+
+@font-face {
+    font-family: 'Montserrat-Bold';
+    src: url('/Fonts/Montserrat-Bold.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'SourceSansPro-Semibold';
+    src: url('/Fonts/SourceSansPro-Semibold.otf') format('opentype');
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'SourceSansPro-Regular';
+    src: url('/Fonts/SourceSansPro-Regular.otf') format('opentype');
+    font-weight: normal;
+    font-style: normal;
+}
+
+.font-montserrat-bold {
+    font-family: 'Montserrat-Bold', sans-serif;
+}
+
+.font-sourcesanspro-semibold {
+    font-family: 'SourceSansPro-Semibold', sans-serif;
+}
+
+.font-sourcesanspro-regular {
+    font-family: 'SourceSansPro-Regular', sans-serif;
+}
+
+h1, h2, h3, h4, h5, h6, a, button, th {
+    font-family: 'Montserrat-Bold', sans-serif;
+}
+
+
+p, span, label, i, input, td {
+    font-family: 'SourceSansPro-Semibold', sans-serif;
+}

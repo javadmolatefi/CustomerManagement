@@ -1,0 +1,67 @@
+﻿<EditForm Model="Customer" OnValidSubmit="HandleSubmit">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+
+    <div class="mb-3">
+        <label>Name</label>
+        <InputText @bind-Value="Customer.Name" class="form-control" />
+    </div>
+
+    <div class="mb-3">
+        <label>Phone</label>
+        <InputText @bind-Value="Customer.Phone" class="form-control" />
+    </div>
+
+    <div class="mb-3">
+        <label>Fax</label>
+        <InputText @bind-Value="Customer.Fax" class="form-control" />
+    </div>
+
+    <div class="mb-3">
+        <label>Address</label>
+        <InputText @bind-Value="Customer.Address" class="form-control" />
+    </div>
+
+    <div class="mb-3">
+        <label>Coworkers</label>
+        <InputNumber @bind-Value="Customer.Coworkers" class="form-control" />
+    </div>
+
+    <div class="mb-3">
+        <label>City</label>
+        <InputSelect @bind-Value="Customer.CityId" class="form-control">
+            <option value="0">Select City</option>
+            @foreach (var city in Cities)
+            {
+                <option value="@city.Id">@city.Title</option>
+            }
+        </InputSelect>
+    </div>
+
+    <button class="btn btn-success">Save</button>
+</EditForm>
+
+@code {
+    [Parameter] public CustomerDto Customer { get; set; } = new();
+    [Parameter] public EventCallback OnSaved { get; set; }
+
+    [Inject] private CustomerService CustomerService { get; set; } = default!;
+    [Inject] private CityService CityService { get; set; } = default!;
+
+    private List<CityDto> Cities = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        Cities = await CityService.GetAllAsync();
+    }
+
+    private async Task HandleSubmit()
+    {
+        if (Customer.Id == 0)
+            await CustomerService.CreateAsync(Customer);
+        else
+            await CustomerService.UpdateAsync(Customer);
+
+        await OnSaved.InvokeAsync();
+    }
+}
