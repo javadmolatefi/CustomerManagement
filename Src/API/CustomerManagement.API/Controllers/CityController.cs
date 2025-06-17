@@ -2,6 +2,7 @@
 using CustomerManagement.Application.Cities.Dtos;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Text;
 
 namespace CustomerManagement.API.Controllers;
 
@@ -49,5 +50,22 @@ public class CityController : ControllerBase
     {
         await _facade.DeleteAsync(id);
         return NoContent();
+    }
+
+    [HttpGet("export")]
+    public async Task<IActionResult> ExportCities()
+    {
+        var cities = await _facade.GetAllAsync();
+
+        var sb = new StringBuilder();
+        sb.AppendLine("Id\tTitle");
+
+        foreach (var city in cities)
+        {
+            sb.AppendLine($"{city.Id}\t{city.Title}");
+        }
+
+        var fileBytes = Encoding.UTF8.GetBytes(sb.ToString());
+        return File(fileBytes, "text/plain", "cities.txt");
     }
 }

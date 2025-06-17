@@ -2,6 +2,7 @@
 using CustomerManagement.Application.Customers.Dtos;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Text;
 
 namespace CustomerManagement.API.Controllers;
 
@@ -50,5 +51,22 @@ public class CustomerController : ControllerBase
     {
         await _facade.DeleteAsync(id);
         return NoContent();
+    }
+
+    [HttpGet("export")]
+    public async Task<IActionResult> ExportCustomers()
+    {
+        var customers = await _facade.GetAllAsync();
+
+        var sb = new StringBuilder();
+        sb.AppendLine("Id\tName\tAddress\tCityTitle\tPhone\tFax\tCoworkers");
+
+        foreach (var c in customers)
+        {
+            sb.AppendLine($"{c.Id}\t{c.Name}\t{c.Address}\t{c.CityTitle}\t{c.Phone}\t{c.Fax}\t{c.Coworkers}");
+        }
+
+        var fileBytes = Encoding.UTF8.GetBytes(sb.ToString());
+        return File(fileBytes, "text/plain", "customers.txt");
     }
 }

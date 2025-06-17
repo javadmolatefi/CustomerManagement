@@ -3,6 +3,8 @@
 @page "/city"
 @using CustomerManagement.BlazorUI.Pages.Shared
 @inject CityService CityService
+@inject HttpClient Http
+@inject IJSRuntime JS
 
 <div style="background-color: #fff; border-radius: 15px; padding: 20px;">
     <div class="row" style="margin-bottom: 15px;">
@@ -13,8 +15,14 @@
         </div>
         <div class="col-6 text-end">
             <label @onclick="OpenNewModal" style="margin-top: 15px !important;" data-bs-toggle="tooltip" data-bs-placement="top" title="Add a City">
-                <a id="create-task-state-link" style="font-size: small;margin-top: 5px !important; cursor: pointer;">
+                <a style="font-size: small;margin-top: 5px !important; cursor: pointer;">
                     <i class="fa-solid fa-circle-plus fa-2xl" style="margin-left: 5px; color: #008bd2;"></i>
+                </a>
+            </label>
+
+            <label @onclick="DownloadCityExport" style="margin-top: 15px !important;" data-bs-toggle="tooltip" data-bs-placement="top" title="Download Cities">
+                <a style="font-size: small;margin-top: 5px !important; cursor: pointer;">
+                    <i class="fa-solid fa-file-arrow-down fa-2xl" style="margin-left: 5px; color: #008bd2;"></i>
                 </a>
             </label>
         </div>
@@ -125,4 +133,19 @@
         await CityService.DeleteAsync(deleteId);
         await RefreshCities();
     }
+
+    private async Task DownloadCityExport()
+    {
+        var response = await Http.GetAsync("api/City/export");
+
+        if (response.IsSuccessStatusCode)
+        {
+            var stream = await response.Content.ReadAsStreamAsync();
+            var fileName = "city.txt";
+
+            using var streamRef = new DotNetStreamReference(stream);
+            await JS.InvokeVoidAsync("downloadFileFromStream", fileName, streamRef);
+        }
+    }
+
 }

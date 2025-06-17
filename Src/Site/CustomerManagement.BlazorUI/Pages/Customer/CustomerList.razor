@@ -3,6 +3,8 @@
 @page "/customer"
 @using CustomerManagement.BlazorUI.Pages.Shared
 @inject CustomerService CustomerService
+@inject HttpClient Http
+@inject IJSRuntime JS
 
 <div style="background-color: #fff; border-radius: 15px; padding: 20px;">
     <div class="row" style="margin-bottom: 15px;">
@@ -13,8 +15,14 @@
         </div>
         <div class="col-6 text-end">
             <label @onclick="OpenNewModal" style="margin-top: 15px !important;" data-bs-toggle="tooltip" data-bs-placement="top" title="Add a Customer">
-                <a id="create-task-state-link" style="font-size: small;margin-top: 5px !important; cursor: pointer;">
+                <a style="font-size: small;margin-top: 5px !important; cursor: pointer;">
                     <i class="fa-solid fa-circle-plus fa-2xl" style="margin-left: 5px; color: #008bd2;"></i>
+                </a>
+            </label>
+
+            <label @onclick="DownloadCustomerExport" style="margin-top: 15px !important;" data-bs-toggle="tooltip" data-bs-placement="top" title="Download Customers">
+                <a style="font-size: small;margin-top: 5px !important; cursor: pointer;">
+                    <i class="fa-solid fa-file-arrow-down fa-2xl" style="margin-left: 5px; color: #008bd2;"></i>
                 </a>
             </label>
         </div>
@@ -153,5 +161,19 @@
     {
         await CustomerService.DeleteAsync(deleteId);
         await RefreshCustomers();
+    }
+
+    private async Task DownloadCustomerExport()
+    {
+        var response = await Http.GetAsync("api/Customer/export");
+
+        if (response.IsSuccessStatusCode)
+        {
+            var stream = await response.Content.ReadAsStreamAsync();
+            var fileName = "customers.txt";
+
+            using var streamRef = new DotNetStreamReference(stream);
+            await JS.InvokeVoidAsync("downloadFileFromStream", fileName, streamRef);
+        }
     }
 }
