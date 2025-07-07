@@ -1,9 +1,10 @@
 ﻿<EditForm Model="City" OnValidSubmit="HandleSubmit">
     <DataAnnotationsValidator />
-    <ValidationSummary />
+
     <div class="mb-3">
         <label>City</label>
         <InputText @bind-Value="City.Title" class="form-control" />
+        <ValidationMessage For="@(() => City.Title)" />
     </div>
     <p style="border-bottom: 1px;"></p>
     <button class="btn btn-success">Save</button>

@@ -3,6 +3,7 @@ using CustomerManagement.Application.Customers.Commands;
 using CustomerManagement.Domain.Entities;
 using CustomerManagement.Domain.Interfaces;
 using MediatR;
+using FluentValidation;
 
 namespace CustomerManagement.Application.Customers.Handlers;
 
@@ -22,6 +23,12 @@ public class ManageCustomerHandler :
 
     public async Task<int> Handle(CreateCustomerCommand request, CancellationToken cancellationToken)
     {
+        var validator = new CustomerDtoValidator();
+        var result = validator.Validate(request.Customer);
+
+        if (!result.IsValid)
+            throw new ValidationException(result.Errors);
+
         var entity = new Customer
         {
             Name = request.Customer.Name,
